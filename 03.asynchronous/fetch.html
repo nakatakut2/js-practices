@@ -10,6 +10,7 @@
       const getHTML = async () => {
         const html = await fetch("https://bootcamp.fjord.jp/")
           .then((response) => {
+            console.log("以下、取得したHTMLです。");
             return response.text();
           })
           .catch((error) => {
