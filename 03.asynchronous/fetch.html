@@ -8,17 +8,14 @@
     <h2>コンソールをご覧ください。</h2>
     <script>
       const getHTML = async () => {
-        const html = await fetch("https://bootcamp.fjord.jp/")
-          .then((response) => {
-            console.log("以下、取得したHTMLです。");
-            return response.text();
-          })
-          .catch((error) => {
-            console.error("非同期処理に失敗しました。", error);
-            return null;
-          });
-
-        console.log(html);
+        try {
+          const url = await fetch("https://bootcamp.fjord.jp/");
+          const html = await url.text();
+          console.log("以下、取得したHTMLです。");
+          console.log(html);
+        } catch (error) {
+          console.error("取得に失敗しました。", error);
+        }
       };
 
       getHTML();
