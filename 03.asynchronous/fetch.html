@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>非同期処理(JavaScript)の課題</title>
+  </head>
+  <body>
+    <h1>非同期処理(JavaScript)の課題</h1>
+    <h2>コンソールをご覧ください。</h2>
+    <script>
+      const getHTML = async () => {
+        const html = await fetch("https://bootcamp.fjord.jp/")
+          .then((response) => {
+            return response.text();
+          })
+          .catch((error) => {
+            console.error("非同期処理に失敗しました。", error);
+            return null;
+          });
+
+        console.log(html);
+      };
+
+      getHTML();
+    </script>
+  </body>
+</html>
