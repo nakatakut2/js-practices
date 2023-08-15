@@ -9,14 +9,12 @@ db = new sqlite3.Database(":memory:");
 db.run(
   "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL UNIQUE)",
   () => {
-    db.run("INSERT INTO books (title) VALUES ('sample1')", () => {
-      db.get("SELECT id FROM books", (_, row) => {
+    db.run("INSERT INTO books (title) VALUES ('sample1')", function () {
+      console.log(this.lastID);
+      db.get("SELECT title FROM books", (_, row) => {
         console.log(row);
-        db.get("SELECT title FROM books", (_, row) => {
-          console.log(row);
-          db.run("DROP TABLE books", () => {
-            db.close();
-          });
+        db.run("DROP TABLE books", () => {
+          db.close();
         });
       });
     });
@@ -49,9 +47,9 @@ await setTimeout(100);
 // Promiseでラップした関数の定義
 const runAsync = (db, sql) => {
   return new Promise((resolve, reject) => {
-    db.run(sql, (err) => {
+    db.run(sql, function (err) {
       if (!err) {
-        resolve();
+        resolve(this);
       } else {
         reject(err);
       }
@@ -93,11 +91,8 @@ runAsync(
   .then(() => {
     return runAsync(db, "INSERT INTO books (title) VALUES ('sample1')");
   })
-  .then(() => {
-    return getAsync(db, "SELECT id FROM books");
-  })
-  .then((row) => {
-    console.log(row);
+  .then((res) => {
+    console.log(res.lastID);
     return getAsync(db, "SELECT title FROM books");
   })
   .then((row) => {
@@ -143,10 +138,13 @@ const asyncMain = async () => {
     db,
     "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL UNIQUE)"
   );
-  await runAsync(db, "INSERT INTO books (title) VALUES ('sample1')");
-  let row = await getAsync(db, "SELECT id FROM books");
-  console.log(row);
-  row = await getAsync(db, "SELECT title FROM books");
+
+  const res = await runAsync(
+    db,
+    "INSERT INTO books (title) VALUES ('sample1')"
+  );
+  console.log(res.lastID);
+  const row = await getAsync(db, "SELECT title FROM books");
   console.log(row);
   await runAsync(db, "DROP TABLE books");
   await closeAsync(db);
@@ -168,12 +166,20 @@ const asyncMain2 = async () => {
   try {
     await runAsync(db, "INSERT INTO books (title) VALUES (NULL)");
   } catch (err) {
-    console.error(err.message);
+    if (err instanceof Error) {
+      console.error(err.message);
+    } else {
+      throw err;
+    }
   }
   try {
     await getAsync(db, "SELECT hoge FROM books");
   } catch (err) {
-    console.error(err.message);
+    if (err instanceof Error) {
+      console.error(err.message);
+    } else {
+      throw err;
+    }
   }
   await runAsync(db, "DROP TABLE books");
   await closeAsync(db);
