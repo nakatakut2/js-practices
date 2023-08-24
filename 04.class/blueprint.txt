@@ -1,0 +1,19 @@
+- MemoApp
+  - databaseManager
+  - optionManager
+  - OperationWithStdin()
+  - OperationWithOption()
+  - main()
+
+- OptionManager
+  - database
+  - outputList()
+  - selectForDetail()
+  - selectForDelete()
+
+- DatabaseManager
+  - db
+  - createTable()
+  - insertMemo()
+  - getAllTitles()
+  - getContent()
