@@ -5,7 +5,7 @@ export default class OptionManager {
   constructor() {
     this.database = new DatabaseManager();
   }
-  // 【オプション -l 】メモのtitleリストを表示する関数
+
   outputList = async () => {
     try {
       const rows = await this.database.getAllTitles(this.database.db);
@@ -21,7 +21,6 @@ export default class OptionManager {
     }
   };
 
-  // 【オプション -r 】titleリスト表示と選択、メモ表示を行う関数
   selectForDetail = async () => {
     try {
       const rows = await this.database.getAllTitles(this.database.db);
@@ -52,7 +51,6 @@ export default class OptionManager {
     }
   };
 
-  // 【オプション -d 】titleのリスト表示と選択、メモ削除を行う関数
   selectForDelete = async () => {
     try {
       const rows = await this.database.getAllTitles(this.database.db);
