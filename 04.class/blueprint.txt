@@ -1,8 +1,8 @@
 - MemoApp
   - databaseManager
   - optionManager
-  - OperationWithStdin()
-  - OperationWithOption()
+  - operationWithStdin()
+  - operationWithOption()
   - main()
 
 - OptionManager
@@ -11,7 +11,7 @@
   - selectForDetail()
   - selectForDelete()
 
-- DatabaseManager
+- MemoDatabase
   - db
   - createTable()
   - insertMemo()

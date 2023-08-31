@@ -1,75 +1,69 @@
 import readline from "node:readline";
 import minimist from "minimist";
-import DatabaseManager from "./databaseManager.js";
+
+import MemoDatabase from "./memoDatabase.js";
 import OptionManager from "./optionManager.js";
 
 class MemoApp {
   constructor() {
-    this.databaseManager = new DatabaseManager();
+    this.memoDatabase = new MemoDatabase();
     this.optionManager = new OptionManager();
   }
 
-  OperationWithStdin = async () => {
+  async operationWithOption(argv) {
+    if (argv.l) {
+      await this.optionManager.outputList();
+    } else if (argv.r) {
+      await this.optionManager.selectForDetail();
+    } else if (argv.d) {
+      await this.optionManager.selectForDelete();
+    }
+  }
+
+  async operationWithStdin() {
+    let memo = "";
+    const rl = readline.createInterface({
+      input: process.stdin,
+    });
     try {
-      let memo = " ";
-      const rl = readline.createInterface({
-        input: process.stdin,
-      });
       await new Promise((resolve) => {
         rl.on("line", (input) => {
-          memo = input;
+          memo += input + "\n";
         });
         rl.on("close", async () => {
           resolve();
         });
       });
-      const title = memo.split(" ")[0];
-      const content = memo;
-      await this.databaseManager.createTable(this.databaseManager.db);
-      await this.databaseManager.insertMemo(
-        this.databaseManager.db,
-        title,
-        content
-      );
     } catch (err) {
       console.error(err.message);
     }
-  };
-
-  OperationWithOption = async () => {
+    const title = memo.split(/\s/)[0];
+    const content = memo;
     try {
-      const argv = minimist(process.argv.slice(2));
-      if (Object.keys(argv).length > 2) {
-        console.log(
-          "The available options are only one, which are l, r, and d."
-        );
-      } else if (Object.keys(argv).length === 1) {
-        console.log("Please choose one option from l, r, and d.");
-      } else if (argv.l) {
-        await this.optionManager.outputList();
-      } else if (argv.r) {
-        await this.optionManager.selectForDetail();
-      } else if (argv.d) {
-        await this.optionManager.selectForDelete();
-      }
+      await this.memoDatabase.insertMemo(title, content);
     } catch (err) {
-      console.error(err.message);
-    }
-  };
-
-  main = async () => {
-    try {
-      if (!process.stdin.isTTY) {
-        await this.OperationWithStdin();
+      if (err instanceof Error) {
+        console.error(err.message);
       } else {
-        await this.OperationWithOption();
+        throw err;
       }
-    } catch (err) {
-      console.error(err.message);
-    } finally {
-      await this.databaseManager.close(this.databaseManager.db);
     }
-  };
+  }
+
+  async main() {
+    const argv = minimist(process.argv.slice(2));
+    await this.memoDatabase.createTable();
+    if (Object.keys(argv).length === 2 && (argv.l || argv.r || argv.d)) {
+      await this.operationWithOption(argv);
+    } else if (!process.stdin.isTTY) {
+      await this.operationWithStdin();
+    } else {
+      console.log(
+        "Please input your memo using the 'echo' command or choose an option from -l, -r, or -d."
+      );
+    }
+    await this.memoDatabase.close();
+  }
 }
 
 const memo = new MemoApp();
