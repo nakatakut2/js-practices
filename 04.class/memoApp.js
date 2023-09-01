@@ -53,14 +53,14 @@ class MemoApp {
   async main() {
     const argv = minimist(process.argv.slice(2));
     await this.memoDatabase.createTable();
-    if (Object.keys(argv).length === 2 && (argv.l || argv.r || argv.d)) {
-      await this.operationWithOption(argv);
-    } else if (!process.stdin.isTTY) {
-      await this.operationWithStdin();
-    } else {
+    if (Object.keys(argv).length > 2) {
       console.log(
         "Please input your memo using the 'echo' command or choose an option from -l, -r, or -d."
       );
+    } else if (Object.keys(argv).length === 2 && (argv.l || argv.r || argv.d)) {
+      await this.operationWithOption(argv);
+    } else if (!process.stdin.isTTY) {
+      await this.operationWithStdin();
     }
     await this.memoDatabase.close();
   }
