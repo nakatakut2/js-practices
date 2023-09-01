@@ -53,7 +53,10 @@ class MemoApp {
   async main() {
     const argv = minimist(process.argv.slice(2));
     await this.memoDatabase.createTable();
-    if (Object.keys(argv).length > 2) {
+    if (
+      Object.keys(argv).length > 2 ||
+      (Object.keys(argv).length === 1 && process.stdin.isTTY)
+    ) {
       console.log(
         "Please input your memo using the 'echo' command or choose an option from -l, -r, or -d."
       );
