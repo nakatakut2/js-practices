@@ -5,7 +5,7 @@ export default class MemoDatabase {
     this.db = new sqlite3.Database("memo.db");
   }
 
-  createTable = () => {
+  createTable() {
     return new Promise((resolve, reject) => {
       this.db.run(
         "CREATE TABLE IF NOT EXISTS memos (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, content TEXT)",
@@ -18,9 +18,9 @@ export default class MemoDatabase {
         }
       );
     });
-  };
+  }
 
-  insertMemo = (title, content) => {
+  insertMemo(title, content) {
     return new Promise((resolve, reject) => {
       this.db.run(
         "INSERT INTO memos (title, content) VALUES (?, ?)",
@@ -34,9 +34,9 @@ export default class MemoDatabase {
         }
       );
     });
-  };
+  }
 
-  getObjectsWithTitle = () => {
+  getObjectsWithTitle() {
     return new Promise((resolve, reject) => {
       this.db.all("SELECT id, title FROM memos ORDER BY id", (err, rows) => {
         if (!err) {
@@ -46,9 +46,9 @@ export default class MemoDatabase {
         }
       });
     });
-  };
+  }
 
-  getObjectWithContent = (answer) => {
+  getObjectWithContent(answer) {
     return new Promise((resolve, reject) => {
       this.db.get(
         "SELECT content FROM memos WHERE id = ?",
@@ -62,9 +62,9 @@ export default class MemoDatabase {
         }
       );
     });
-  };
+  }
 
-  deleteMemo = (answer) => {
+  deleteMemo(answer) {
     return new Promise((resolve, reject) => {
       this.db.run("DELETE FROM memos WHERE id = ?", [answer], function (err) {
         if (!err) {
@@ -74,9 +74,9 @@ export default class MemoDatabase {
         }
       });
     });
-  };
+  }
 
-  close = () => {
+  close() {
     return new Promise((resolve, reject) => {
       this.db.close((err) => {
         if (!err) {
@@ -86,5 +86,5 @@ export default class MemoDatabase {
         }
       });
     });
-  };
+  }
 }

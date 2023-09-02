@@ -17,26 +17,38 @@ class MemoApp {
       await this.optionManager.selectForDetail();
     } else if (argv.d) {
       await this.optionManager.selectForDelete();
+    } else {
+      console.log("Please choose an option from -l, -r, or -d.");
+    }
+  }
+
+  async stdinHandling() {
+    try {
+      return new Promise((resolve) => {
+        const rl = readline.createInterface({
+          input: process.stdin,
+        });
+        let memo = "";
+        rl.on("line", (input) => {
+          if (input) {
+            memo += input + "\n";
+          }
+        });
+        rl.on("close", () => {
+          resolve(memo);
+        });
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(err.message);
+      } else {
+        throw err;
+      }
     }
   }
 
   async operationWithStdin() {
-    let memo = "";
-    const rl = readline.createInterface({
-      input: process.stdin,
-    });
-    try {
-      await new Promise((resolve) => {
-        rl.on("line", (input) => {
-          memo += input + "\n";
-        });
-        rl.on("close", async () => {
-          resolve();
-        });
-      });
-    } catch (err) {
-      console.error(err.message);
-    }
+    const memo = await this.stdinHandling();
     const title = memo.split(/\s/)[0];
     const content = memo;
     try {
@@ -53,16 +65,22 @@ class MemoApp {
   async main() {
     const argv = minimist(process.argv.slice(2));
     await this.memoDatabase.createTable();
-    if (
-      Object.keys(argv).length > 2 ||
-      (Object.keys(argv).length === 1 && process.stdin.isTTY)
-    ) {
+
+    if (Object.keys(argv).length > 2) {
+      console.log("Please choose an option from -l, -r, or -d.");
+      return;
+    }
+
+    if (Object.keys(argv).length === 1 && process.stdin.isTTY) {
       console.log(
         "Please input your memo using the 'echo' command or choose an option from -l, -r, or -d."
       );
-    } else if (Object.keys(argv).length === 2 && (argv.l || argv.r || argv.d)) {
+      return;
+    }
+
+    if (Object.keys(argv).length === 2) {
       await this.operationWithOption(argv);
-    } else if (!process.stdin.isTTY) {
+    } else {
       await this.operationWithStdin();
     }
     await this.memoDatabase.close();
