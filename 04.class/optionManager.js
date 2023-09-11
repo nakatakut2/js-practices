@@ -20,7 +20,10 @@ export default class OptionManager {
       }
     } catch (err) {
       if (err instanceof Error) {
-        console.error(err.message);
+        console.error(
+          "An error occurred while retrieving the list:",
+          err.message
+        );
       } else {
         throw err;
       }
@@ -49,7 +52,10 @@ export default class OptionManager {
       console.log(memo.content);
     } catch (err) {
       if (err instanceof Error) {
-        console.error(err.message);
+        console.error(
+          "An error occurred while selecting a memo for details:",
+          err.message
+        );
       } else {
         throw err;
       }
@@ -77,7 +83,10 @@ export default class OptionManager {
       await this.database.deleteMemo(answer.memo_id);
     } catch (err) {
       if (err instanceof Error) {
-        console.error(err.message);
+        console.error(
+          "An error occurred while selecting a memo for deletion:",
+          err.message
+        );
       } else {
         throw err;
       }

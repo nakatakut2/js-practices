@@ -46,7 +46,7 @@ class MemoApp {
       await this.memoDatabase.insertMemo(title, content);
     } catch (err) {
       if (err instanceof Error) {
-        console.error(err.message);
+        console.error("An error occurred while processing input:", err.message);
       } else {
         throw err;
       }
