@@ -9,7 +9,7 @@ export default class MemoDatabase {
     return new Promise((resolve, reject) => {
       this.db.run(
         "CREATE TABLE IF NOT EXISTS memos (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, content TEXT)",
-        function (err) {
+        (err) => {
           if (!err) {
             resolve();
           } else {
@@ -25,7 +25,7 @@ export default class MemoDatabase {
       this.db.run(
         "INSERT INTO memos (title, content) VALUES (?, ?)",
         [title, content],
-        function (err) {
+        (err) => {
           if (!err) {
             resolve();
           } else {
@@ -36,9 +36,9 @@ export default class MemoDatabase {
     });
   }
 
-  getObjectsWithTitle() {
+  getMemos() {
     return new Promise((resolve, reject) => {
-      this.db.all("SELECT id, title FROM memos ORDER BY id", (err, rows) => {
+      this.db.all("SELECT * FROM memos ORDER BY id", (err, rows) => {
         if (!err) {
           resolve(rows);
         } else {
@@ -48,25 +48,9 @@ export default class MemoDatabase {
     });
   }
 
-  getObjectWithContent(answer) {
+  deleteMemo(id) {
     return new Promise((resolve, reject) => {
-      this.db.get(
-        "SELECT content FROM memos WHERE id = ?",
-        [answer],
-        (err, row) => {
-          if (!err) {
-            resolve(row);
-          } else {
-            reject(err);
-          }
-        }
-      );
-    });
-  }
-
-  deleteMemo(answer) {
-    return new Promise((resolve, reject) => {
-      this.db.run("DELETE FROM memos WHERE id = ?", [answer], function (err) {
+      this.db.run("DELETE FROM memos WHERE id = ?", [id], (err) => {
         if (!err) {
           resolve();
         } else {

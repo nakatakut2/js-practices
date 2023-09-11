@@ -9,13 +9,14 @@ export default class OptionManager {
 
   async outputList() {
     try {
-      const rows = await this.database.getObjectsWithTitle();
-      if (rows.length === 0) {
+      const memos = await this.database.getMemos();
+      if (memos.length === 0) {
         console.log("No memos.");
-      } else {
-        for (const row of rows) {
-          console.log(row.title);
-        }
+        return;
+      }
+
+      for (const memo of memos) {
+        console.log(memo.title);
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -28,26 +29,24 @@ export default class OptionManager {
 
   async selectForDetail() {
     try {
-      const rows = await this.database.getObjectsWithTitle();
-      if (rows.length === 0) {
+      const memos = await this.database.getMemos();
+      if (memos.length === 0) {
         console.log("No memos.");
-      } else {
-        const question = {
-          type: "select",
-          name: "memo",
-          message: "Choose a memo you want to see:",
-          choices: rows.map((row) => ({ name: row.title, value: row.id })),
-          result() {
-            return this.focused.value;
-          },
-        };
-        const answer = await Enquirer.prompt(question);
-        const res = await this.database.getObjectWithContent(answer.memo);
-        const allLines = res.content.split(/\s/);
-        for (const line of allLines) {
-          console.log(line);
-        }
+        return;
       }
+
+      const question = {
+        type: "select",
+        name: "memo_id",
+        message: "Choose a memo you want to see:",
+        choices: memos.map((memo) => ({ name: memo.title, value: memo.id })),
+        result() {
+          return this.focused.value;
+        },
+      };
+      const answer = await Enquirer.prompt(question);
+      const memo = memos.find(({ id }) => id === answer.memo_id);
+      console.log(memo.content);
     } catch (err) {
       if (err instanceof Error) {
         console.error(err.message);
@@ -59,22 +58,23 @@ export default class OptionManager {
 
   async selectForDelete() {
     try {
-      const rows = await this.database.getObjectsWithTitle();
-      if (rows.length === 0) {
+      const memos = await this.database.getMemos();
+      if (memos.length === 0) {
         console.log("No memos.");
-      } else {
-        const question = {
-          type: "select",
-          name: "memo",
-          message: "Choose a memo you want to delete:",
-          choices: rows.map((row) => ({ name: row.title, value: row.id })),
-          result() {
-            return this.focused.value;
-          },
-        };
-        const answer = await Enquirer.prompt(question);
-        await this.database.deleteMemo(answer.memo);
+        return;
       }
+
+      const question = {
+        type: "select",
+        name: "memo_id",
+        message: "Choose a memo you want to delete:",
+        choices: memos.map((memo) => ({ name: memo.title, value: memo.id })),
+        result() {
+          return this.focused.value;
+        },
+      };
+      const answer = await Enquirer.prompt(question);
+      await this.database.deleteMemo(answer.memo_id);
     } catch (err) {
       if (err instanceof Error) {
         console.error(err.message);

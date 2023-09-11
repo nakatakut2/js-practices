@@ -10,48 +10,39 @@ class MemoApp {
     this.optionManager = new OptionManager();
   }
 
-  async operationWithOption(argv) {
-    if (argv.l) {
+  async processWithOption(option) {
+    if (option === "l") {
       await this.optionManager.outputList();
-    } else if (argv.r) {
+    } else if (option === "r") {
       await this.optionManager.selectForDetail();
-    } else if (argv.d) {
+    } else if (option === "d") {
       await this.optionManager.selectForDelete();
-    } else {
-      console.log("Please choose an option from -l, -r, or -d.");
     }
   }
 
-  async stdinHandling() {
-    try {
-      return new Promise((resolve) => {
-        const rl = readline.createInterface({
-          input: process.stdin,
-        });
-        let memo = "";
-        rl.on("line", (input) => {
-          if (input) {
-            memo += input + "\n";
-          }
-        });
-        rl.on("close", () => {
-          resolve(memo);
-        });
+  #receiveStdin() {
+    return new Promise((resolve, reject) => {
+      const rl = readline.createInterface({
+        input: process.stdin,
       });
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error(err.message);
-      } else {
-        throw err;
-      }
-    }
+      let memo = [];
+      rl.on("line", (input) => {
+        memo.push(input);
+      });
+      rl.on("close", () => {
+        resolve(memo.join("\n"));
+      });
+
+      rl.on("error", (err) => {
+        reject(err);
+      });
+    });
   }
 
-  async operationWithStdin() {
-    const memo = await this.stdinHandling();
-    const title = memo.split(/\s/)[0];
-    const content = memo;
+  async processWithStdin() {
     try {
+      const content = await this.#receiveStdin();
+      const title = content.split(/\n/)[0];
       await this.memoDatabase.insertMemo(title, content);
     } catch (err) {
       if (err instanceof Error) {
@@ -63,29 +54,39 @@ class MemoApp {
   }
 
   async main() {
-    const argv = minimist(process.argv.slice(2));
     await this.memoDatabase.createTable();
+    const optionCandidates = Object.keys(minimist(process.argv.slice(2)));
 
-    if (Object.keys(argv).length > 2) {
+    // オプション候補からminimistで取得される"_"を除く
+    optionCandidates.shift();
+
+    // l, r, d 以外の入力があったら終了
+    for (const candidate of optionCandidates) {
+      if (candidate !== "l" && candidate !== "r" && candidate !== "d") {
+        console.log("Please choose an option from -l, -r, or -d.");
+        return;
+      }
+    }
+
+    const filteredOption = optionCandidates.filter((candidate) => {
+      return ["l", "r", "d"].includes(candidate);
+    });
+
+    // オプションが２つ以上入力されたら終了
+    if (filteredOption.length > 1) {
       console.log("Please choose an option from -l, -r, or -d.");
       return;
     }
 
-    if (Object.keys(argv).length === 1 && process.stdin.isTTY) {
-      console.log(
-        "Please input your memo using the 'echo' command or choose an option from -l, -r, or -d."
-      );
-      return;
-    }
-
-    if (Object.keys(argv).length === 2) {
-      await this.operationWithOption(argv);
+    // オプションが l, r, d のうち１つだけ入力されれば続行
+    if (filteredOption.length === 1) {
+      await this.processWithOption(filteredOption[0]);
     } else {
-      await this.operationWithStdin();
+      await this.processWithStdin();
     }
     await this.memoDatabase.close();
   }
 }
 
-const memo = new MemoApp();
-memo.main();
+const newMemo = new MemoApp();
+newMemo.main();

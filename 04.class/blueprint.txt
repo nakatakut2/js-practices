@@ -1,8 +1,9 @@
 - MemoApp
-  - databaseManager
+  - memoDatabase
   - optionManager
-  - operationWithStdin()
-  - operationWithOption()
+  - processWithOption()
+  - #receiveStdin()
+  - processWithStdin()
   - main()
 
 - OptionManager
@@ -15,5 +16,6 @@
   - db
   - createTable()
   - insertMemo()
-  - getAllTitles()
-  - getContent()
+  - getMemos()
+  - deleteMemo()
+  - close()
