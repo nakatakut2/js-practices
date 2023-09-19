@@ -42,7 +42,7 @@ class MemoApp {
   async processWithStdin() {
     try {
       const content = await this.#receiveStdin();
-      const title = content.split(/\n/)[0];
+      const title = content.split("\n")[0];
       await this.memoDatabase.insertMemo(title, content);
     } catch (err) {
       if (err instanceof Error) {
@@ -68,19 +68,19 @@ class MemoApp {
       }
     }
 
-    const filteredOption = optionCandidates.filter((candidate) => {
+    const filteredOptions = optionCandidates.filter((candidate) => {
       return ["l", "r", "d"].includes(candidate);
     });
 
     // オプションが２つ以上入力されたら終了
-    if (filteredOption.length > 1) {
+    if (filteredOptions.length >= 2) {
       console.log("Please choose an option from -l, -r, or -d.");
       return;
     }
 
     // オプションが l, r, d のうち１つだけ入力されれば続行
-    if (filteredOption.length === 1) {
-      await this.processWithOption(filteredOption[0]);
+    if (filteredOptions.length === 1) {
+      await this.processWithOption(filteredOptions[0]);
     } else {
       await this.processWithStdin();
     }

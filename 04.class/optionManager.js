@@ -8,16 +8,9 @@ export default class OptionManager {
   }
 
   async outputList() {
+    let memos;
     try {
-      const memos = await this.database.getMemos();
-      if (memos.length === 0) {
-        console.log("No memos.");
-        return;
-      }
-
-      for (const memo of memos) {
-        console.log(memo.title);
-      }
+      memos = await this.database.getMemos();
     } catch (err) {
       if (err instanceof Error) {
         console.error(
@@ -27,6 +20,15 @@ export default class OptionManager {
       } else {
         throw err;
       }
+    }
+
+    if (memos.length === 0) {
+      console.log("No memos.");
+      return;
+    }
+
+    for (const memo of memos) {
+      console.log(memo.title);
     }
   }
 
@@ -40,7 +42,7 @@ export default class OptionManager {
 
       const question = {
         type: "select",
-        name: "memo_id",
+        name: "memoId",
         message: "Choose a memo you want to see:",
         choices: memos.map((memo) => ({ name: memo.title, value: memo.id })),
         result() {
@@ -48,7 +50,7 @@ export default class OptionManager {
         },
       };
       const answer = await Enquirer.prompt(question);
-      const memo = memos.find(({ id }) => id === answer.memo_id);
+      const memo = memos.find(({ id }) => id === answer.memoId);
       console.log(memo.content);
     } catch (err) {
       if (err instanceof Error) {
@@ -72,7 +74,7 @@ export default class OptionManager {
 
       const question = {
         type: "select",
-        name: "memo_id",
+        name: "memoId",
         message: "Choose a memo you want to delete:",
         choices: memos.map((memo) => ({ name: memo.title, value: memo.id })),
         result() {
@@ -80,7 +82,7 @@ export default class OptionManager {
         },
       };
       const answer = await Enquirer.prompt(question);
-      await this.database.deleteMemo(answer.memo_id);
+      await this.database.deleteMemo(answer.memoId);
     } catch (err) {
       if (err instanceof Error) {
         console.error(
