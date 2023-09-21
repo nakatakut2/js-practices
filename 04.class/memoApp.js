@@ -26,16 +26,10 @@ class MemoApp {
         input: process.stdin,
       });
       let memo = [];
-      rl.on("line", (input) => {
-        memo.push(input);
-      });
-      rl.on("close", () => {
-        resolve(memo.join("\n"));
-      });
+      rl.on("line", (input) => memo.push(input));
+      rl.on("close", () => resolve(memo.join("\n")));
 
-      rl.on("error", (err) => {
-        reject(err);
-      });
+      rl.on("error", (err) => reject(err));
     });
   }
 
@@ -68,9 +62,9 @@ class MemoApp {
       }
     }
 
-    const filteredOptions = optionCandidates.filter((candidate) => {
-      return ["l", "r", "d"].includes(candidate);
-    });
+    const filteredOptions = optionCandidates.filter((candidate) =>
+      ["l", "r", "d"].includes(candidate)
+    );
 
     // オプションが２つ以上入力されたら終了
     if (filteredOptions.length >= 2) {
