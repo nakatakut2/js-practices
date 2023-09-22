@@ -66,7 +66,7 @@ export default class OptionManager {
     try {
       answer = await Enquirer.prompt(question);
     } catch (err) {
-      console.log("Program has been interrupted.");
+      console.error("Program has been interrupted.");
       return;
     }
 
@@ -108,7 +108,7 @@ export default class OptionManager {
     try {
       answer = await Enquirer.prompt(question);
     } catch (err) {
-      console.log("Program has been interrupted.");
+      console.error("Program has been interrupted.");
       return;
     }
 
