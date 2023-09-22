@@ -66,15 +66,10 @@ export default class OptionManager {
     try {
       answer = await Enquirer.prompt(question);
     } catch (err) {
-      if (err instanceof Error) {
-        console.error(
-          "An error occurred while prompting for details:",
-          err.message
-        );
-      } else {
-        return;
-      }
+      console.log("Program has been interrupted.");
+      return;
     }
+
     const memo = memos.find(({ id }) => id === answer.memoId);
     console.log(memo.content);
   }
@@ -113,14 +108,8 @@ export default class OptionManager {
     try {
       answer = await Enquirer.prompt(question);
     } catch (err) {
-      if (err instanceof Error) {
-        console.error(
-          "An error occurred while prompting for deletion:",
-          err.message
-        );
-      } else {
-        return;
-      }
+      console.log("Program has been interrupted.");
+      return;
     }
 
     try {
