@@ -1,0 +1,21 @@
+- MemoApp
+  - memoDatabase
+  - optionManager
+  - processWithOption()
+  - #receiveStdin()
+  - processWithStdin()
+  - main()
+
+- OptionManager
+  - database
+  - outputList()
+  - selectForDetail()
+  - selectForDelete()
+
+- MemoDatabase
+  - db
+  - createTable()
+  - insertMemo()
+  - getMemos()
+  - deleteMemo()
+  - close()
